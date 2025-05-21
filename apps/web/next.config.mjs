@@ -1,6 +1,7 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
+    // output: 'standalone', // Add this explicitly
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
