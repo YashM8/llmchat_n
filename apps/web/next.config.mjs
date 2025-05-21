@@ -9,7 +9,6 @@ const nextConfig = {
             { hostname: 'zyqdiwxgffuy8ymd.public.blob.vercel-storage.com' },
         ],
     },
-
     experimental: {
         externalDir: true,
     },
@@ -32,7 +31,6 @@ const nextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-    // Sentry configuration (unchanged)
     org: 'saascollect',
     project: 'javascript-nextjs',
     silent: !process.env.CI,
