@@ -1,13 +1,9 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-export default clerkMiddleware(async (auth, req) => {
-    return NextResponse.next();
-});
+export function middleware() {
+  return NextResponse.next();   // do nothing
+}
 
 export const config = {
-    matcher: [
-        '/api/:path*',
-        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    ],
+  matcher: '/(.*)',             // or remove config entirely
 };
