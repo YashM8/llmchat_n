@@ -15,6 +15,7 @@ A flexible and powerful system for building AI agent workflows using a graph-bas
   - OpenAI
   - Anthropic
   - Together AI
+- Embedding generation via Jina AI
 
 ## Getting Started
 
@@ -103,8 +104,22 @@ Environment variables (see `.env.example`):
 - `ANTHROPIC_MODEL` (optional)
 - `TOGETHER_API_KEY` (optional)
 - `TOGETHER_MODEL` (optional)
+- `JINA_API_KEY` (optional, for document retrieval feature): Your Jina AI API key.
 - `TEMPERATURE` (default: 0.7)
 - `MAX_TOKENS` (default: 4000)
+
+## Document Retrieval with Jina AI
+
+This system can perform semantic search over a local document collection using Jina AI embeddings.
+
+- **Document Source**: Documents are expected to be in a TSV file located at `packages/ai/data/docs.tsv`. The TSV must contain at least a 'text' column for the content to be embedded. Other columns like 'id', 'title', 'source_url' can also be included and will be returned with the retrieved documents.
+- **Functionality**: When a query is processed by a workflow that includes the `jina-document-retrieval` task, the system will:
+    1. Embed the user's query using Jina AI.
+    2. Embed the documents from `docs.tsv` (embeddings are currently generated on first use per session/process, not persistently cached across restarts unless implemented separately).
+    3. Calculate similarity between the query and document embeddings.
+    4. Retrieve the top N most relevant documents.
+    5. These documents are then added to the context for use by downstream LLM tasks (e.g., to help formulate an answer).
+- **Configuration**: Requires `JINA_API_KEY` to be set in the environment. The default path to the TSV file is `packages/ai/data/docs.tsv` and can be configured within the `jina-document-retrieval` task or by setting `tsv_file_path` in the workflow context.
 
 ## Contributing
 

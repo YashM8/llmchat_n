@@ -1,12 +1,20 @@
 import { ChatEditor, markdownStyles } from '@repo/common/components';
 import { useAgentStream, useChatEditor, useCopyText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
-import { ThreadItem } from '@repo/shared/types';
+import { ThreadItem } from '@repo/shared/types'; // Assuming ThreadItem has answer.object and answer.objectType
 import { Button, cn } from '@repo/ui';
 import { IconCheck, IconCopy, IconPencil } from '@tabler/icons-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ImageMessage } from './image-message';
+// Local interface for retrieved documents
+interface DisplayRetrievedDocument {
+  text: string;
+  score: number;
+  // Add any other fields from the original DocReaderDocument if they are needed for display
+  // For example, if there was a 'title' or 'source_url' in your TSV.
+}
+
 type MessageProps = {
     message: string;
     imageAttachment?: string;
@@ -118,6 +126,20 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                     />
                 )}
             </div>
+            {/* Display Retrieved Documents if available */}
+            {threadItem.role === 'assistant' && threadItem.answer?.objectType === 'retrieved_documents' && threadItem.answer?.object && (
+              <div className="retrieved-documents-container mt-3 w-full max-w-[80%] self-end rounded-lg border bg-muted/30 p-3">
+                <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Retrieved Context:</h4>
+                <ul className="space-y-2">
+                  {(threadItem.answer.object as DisplayRetrievedDocument[]).map((doc, index) => (
+                    <li key={index} className="text-xs rounded-md border bg-background p-2 shadow-sm">
+                      <p className="font-medium text-muted-foreground">Score: <span className="font-normal text-foreground">{doc.score.toFixed(4)}</span></p>
+                      <p className="text-muted-foreground line-clamp-3">{doc.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </div>
     );
 });

@@ -313,6 +313,12 @@ export const ApiKeySettings = () => {
             value: apiKeys.GEMINI_API_KEY,
             url: 'https://ai.google.dev/api',
         },
+        {
+          name: 'Jina AI (Embeddings)',
+          key: 'JINA_API_KEY' as keyof ApiKeys,
+          value: apiKeys.JINA_API_KEY,
+          url: 'https://jina.ai/embeddings/', 
+        }
     ];
 
     const validateApiKey = (apiKey: string, provider: string) => {

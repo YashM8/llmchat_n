@@ -13,6 +13,7 @@ export const Providers = {
   TOGETHER: 'together',
   GOOGLE: 'google',
   FIREWORKS: 'fireworks',
+  JINA: 'jina',
 } as const;
 
 export type ProviderEnumType = (typeof Providers)[keyof typeof Providers];
@@ -30,7 +31,7 @@ declare global {
 }
 
 // Helper function to get API key from env or global
-const getApiKey = (provider: ProviderEnumType): string => {
+const getApiKey = (provider: ProviderEnumType | 'jina'): string => { // Modified to accept 'jina'
   // For server environments
   if (typeof process !== 'undefined' && process.env) {
     switch (provider) {
@@ -49,19 +50,28 @@ const getApiKey = (provider: ProviderEnumType): string => {
       case Providers.FIREWORKS:
         if (process.env.FIREWORKS_API_KEY) return process.env.FIREWORKS_API_KEY;
         break;
+      case 'jina': // Added case for Jina
+        if (process.env.JINA_API_KEY) return process.env.JINA_API_KEY;
+        break;
     }
   }
 
   // For worker environments (use self)
   if (typeof self !== 'undefined') {
+    if (provider === 'jina') {
+      if ((self as any).JINA_API_KEY) return (self as any).JINA_API_KEY;
+      if (typeof window !== 'undefined' && window.JINA_API_KEY) {
+        return window.JINA_API_KEY || '';
+      }
+    }
     // Check if AI_API_KEYS exists on self
-    if ((self as any).AI_API_KEYS && (self as any).AI_API_KEYS[provider]) {
-      return (self as any).AI_API_KEYS[provider];
+    if ((self as any).AI_API_KEYS && (self as any).AI_API_KEYS[provider as ProviderEnumType]) {
+      return (self as any).AI_API_KEYS[provider as ProviderEnumType];
     }
     
     // For browser environments (self is also defined in browser)
     if (typeof window !== 'undefined' && window.AI_API_KEYS) {
-      return window.AI_API_KEYS[provider] || '';
+      return window.AI_API_KEYS[provider as ProviderEnumType] || '';
     }
   }
 

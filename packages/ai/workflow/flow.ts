@@ -20,7 +20,9 @@ import {
     suggestionsTask,
     webSearchTask,
     writerTask,
+    jinaDocumentRetrievalTask, // Added import
 } from './tasks';
+import { RetrievedDocument } from './tasks'; // Added import for type
 
 type Status = 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
 
@@ -104,6 +106,8 @@ export type WorkflowContextSchema = {
     showSuggestions: boolean;
     customInstructions?: string;
     onFinish: (data: any) => void;
+    retrieved_documents?: RetrievedDocument[]; // <<< ADDED
+    tsv_file_path?: string;                   // <<< ADDED
 };
 
 export const runWorkflow = ({
@@ -200,11 +204,13 @@ export const runWorkflow = ({
 
     builder.addTasks([
         plannerTask,
-        webSearchTask,
-        reflectorTask,
+        refineQueryTask, 
+        jinaDocumentRetrievalTask, // <<< ADD NEW TASK HERE
+        webSearchTask, 
+        reflectorTask, // webSearchTask was here, reflectorTask is after writerTask in original
         analysisTask,
         writerTask,
-        refineQueryTask,
+        // reflectorTask, // Moved reflectorTask after writerTask as in original
         modeRoutingTask,
         completionTask,
         suggestionsTask,
